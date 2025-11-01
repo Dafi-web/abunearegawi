@@ -4,7 +4,6 @@ import MediaViewer from '../../components/MediaViewer';
 import './Posts.css';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
-const SERVER_URL = process.env.REACT_APP_API_URL ? process.env.REACT_APP_API_URL.replace('/api', '') : 'http://localhost:5001';
 
 const Posts = () => {
   const [posts, setPosts] = useState([]);
@@ -625,6 +624,7 @@ const Posts = () => {
                         ) : vid.videoType === 'youtube' || vid.videoType === 'vimeo' ? (
                           <iframe
                             src={vid.url}
+                            title={`Video ${index + 1}`}
                             width="100%"
                             height="200"
                             frameBorder="0"

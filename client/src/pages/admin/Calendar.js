@@ -13,6 +13,7 @@ const AdminCalendar = () => {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
+  // eslint-disable-next-line no-unused-vars
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [formData, setFormData] = useState({
     title: '',

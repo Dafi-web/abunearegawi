@@ -1,4 +1,4 @@
-export default {
+const translations = {
   nav: {
     home: 'Home',
     events: 'Evenementen',
@@ -10,6 +10,7 @@ export default {
     login: 'Inloggen',
     register: 'Registreren',
     logout: 'Uitloggen',
+    changePassword: 'Wachtwoord Wijzigen',
   },
   home: {
     welcome: 'Welkom bij Abune Aregawi Tigrayans Orthodoxe Kerk, Amsterdam',
@@ -163,5 +164,26 @@ export default {
     dateTime: 'Datum & Tijd:',
     location: 'Locatie:',
   },
+  changePassword: {
+    title: 'Wachtwoord Wijzigen',
+    subtitle: 'Werk uw account wachtwoord bij',
+    currentPassword: 'Huidig Wachtwoord',
+    newPassword: 'Nieuw Wachtwoord',
+    confirmPassword: 'Bevestig Nieuw Wachtwoord',
+    enterCurrentPassword: 'Voer uw huidige wachtwoord in',
+    enterNewPassword: 'Voer uw nieuwe wachtwoord in',
+    confirmNewPassword: 'Bevestig uw nieuwe wachtwoord',
+    passwordHint: 'Wachtwoord moet minimaal 6 tekens lang zijn',
+    changePassword: 'Wachtwoord Wijzigen',
+    changing: 'Aan het wijzigen...',
+    success: 'Wachtwoord succesvol gewijzigd! Doorverwijzen...',
+    error: 'Wachtwoord wijzigen mislukt. Probeer het opnieuw.',
+    passwordsNoMatch: 'Nieuw wachtwoord en bevestigingswachtwoord komen niet overeen',
+    passwordTooShort: 'Wachtwoord moet minimaal 6 tekens zijn',
+    samePassword: 'Nieuw wachtwoord moet anders zijn dan het huidige wachtwoord',
+    loginRequired: 'Log in om uw wachtwoord te wijzigen',
+  },
 };
+
+export default translations;
 

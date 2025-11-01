@@ -13,7 +13,7 @@ const Events = () => {
 
   useEffect(() => {
     loadPosts();
-  }, [filter]);
+  }, [filter]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadPosts = async () => {
     try {

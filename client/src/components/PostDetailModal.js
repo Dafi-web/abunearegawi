@@ -97,7 +97,7 @@ const PostDetailModal = ({ post, onClose }) => {
                   <div key={index} className="image-thumbnail-wrapper">
                     <img
                       src={img}
-                      alt={`${post.title} - Image ${index + 1}`}
+                      alt={`${post.title} ${index + 1}`}
                       className="image-thumbnail"
                       onClick={() => handleImageClick(index)}
                     />
@@ -150,7 +150,7 @@ const PostDetailModal = ({ post, onClose }) => {
           <div className="fullscreen-image-content" onClick={(e) => e.stopPropagation()}>
             <img
               src={allImages[currentImageIndex]}
-              alt={`${post.title} - Image ${currentImageIndex + 1}`}
+              alt={`${post.title} ${currentImageIndex + 1}`}
               className="fullscreen-image"
             />
             <div className="fullscreen-image-counter">

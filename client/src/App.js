@@ -19,6 +19,7 @@ import AdminCalendar from './pages/admin/Calendar';
 import AdminMembers from './pages/admin/Members';
 import Notifications from './pages/Notifications';
 import PaymentSuccess from './pages/PaymentSuccess';
+import ChangePassword from './pages/ChangePassword';
 import PrivateRoute from './components/routing/PrivateRoute';
 import AdminRoute from './components/routing/AdminRoute';
 import './App.css';
@@ -82,6 +83,14 @@ function App() {
                   element={
                     <PrivateRoute>
                       <Notifications />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/change-password"
+                  element={
+                    <PrivateRoute>
+                      <ChangePassword />
                     </PrivateRoute>
                   }
                 />

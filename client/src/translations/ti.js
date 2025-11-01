@@ -1,4 +1,4 @@
-export default {
+const translations = {
   nav: {
     home: 'መንበር',
     events: 'ፅንስታት',
@@ -10,6 +10,7 @@ export default {
     login: 'እተወ',
     register: 'ተመዝግብ',
     logout: 'ውጻእ',
+    changePassword: 'ዕምሮ ለውጥ',
   },
   home: {
     welcome: 'ናብ ኣብ አቡነ አረጋዊ ትግራዋይ ኦርቶዶክስ ቤተ ክርስትያን አምስተርዳም ብደሓን መጻእኩም',
@@ -163,5 +164,26 @@ export default {
     dateTime: 'ግዜ & እዋን:',
     location: 'ቦታ:',
   },
+  changePassword: {
+    title: 'ዕምሮ ለውጥ',
+    subtitle: 'ናይ ኣካውንትኩም ዕምሮ ኣዘምኑ',
+    currentPassword: 'ናይ ሕጂ ዕምሮ',
+    newPassword: 'ሓድሽ ዕምሮ',
+    confirmPassword: 'ሓድሽ ዕምሮ ኣረጋግጽ',
+    enterCurrentPassword: 'ናይ ሕጂ ዕምሮኩም ኣእቱ',
+    enterNewPassword: 'ሓድሽ ዕምሮኩም ኣእቱ',
+    confirmNewPassword: 'ሓድሽ ዕምሮኩም ኣረጋግጹ',
+    passwordHint: 'ዕምሮ ኣድላይ ንዝዀነ ይኹን ብዙሕ ኣልፋታት ክህሉ ኣለዎ',
+    changePassword: 'ዕምሮ ለውጥ',
+    changing: 'እናቐይር ኣሎና...',
+    success: 'ዕምሮ ብትኽክል ተቐዪሩ! እናቐይር ኣሎና...',
+    error: 'ዕምሮ ምቕያር ኣይተሳአለን። በጃኹም ዳግማይ ፈትኑ።',
+    passwordsNoMatch: 'ሓድሽ ዕምሮን ኣረጋግጽ ዕምሮን ኣይሓዙን',
+    passwordTooShort: 'ዕምሮ ኣድላይ ንዝዀነ ይኹን ቁጽሪ ኣልፋታት ክህሉ ኣለዎ',
+    samePassword: 'ሓድሽ ዕምሮ ካብ ሕጂ ዕምሮ ንሓድጎ ክኸውን ኣለዎ',
+    loginRequired: 'ዕምሮ ንምቕያር በጃኹም እተዉ',
+  },
 };
+
+export default translations;
 

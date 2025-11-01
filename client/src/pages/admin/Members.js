@@ -12,7 +12,7 @@ const Members = () => {
   useEffect(() => {
     loadMembers();
     loadPaymentStatus();
-  }, [selectedMonth, selectedYear]);
+  }, [selectedMonth, selectedYear]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadMembers = async () => {
     try {

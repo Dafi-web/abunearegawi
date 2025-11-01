@@ -24,6 +24,11 @@ app.options('*', cors(corsOptions));
 
 app.use(express.json());
 
+// Health check endpoint for Render
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ status: 'ok', message: 'Server is running' });
+});
+
 // Serve static files from uploads directory
 app.use('/uploads', express.static('uploads'));
 

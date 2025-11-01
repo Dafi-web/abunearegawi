@@ -17,7 +17,6 @@ const DonateFormInternal = ({ clientSecret: clientSecretProp, setClientSecret: s
   const [customAmount, setCustomAmount] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
   const [clientSecret, setClientSecret] = useState(clientSecretProp || '');
   const [creatingIntent, setCreatingIntent] = useState(false);
 
@@ -56,7 +55,7 @@ const DonateFormInternal = ({ clientSecret: clientSecretProp, setClientSecret: s
       };
       createPaymentIntent();
     }
-  }, [amount, stripe, clientSecret, clientSecretProp, setParentClientSecret]);
+  }, [amount, stripe, clientSecret, clientSecretProp, setParentClientSecret, t]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -88,8 +87,6 @@ const DonateFormInternal = ({ clientSecret: clientSecretProp, setClientSecret: s
 
       if (confirmError) {
         setError(confirmError.message);
-      } else {
-        setSuccess(true);
       }
     } catch (error) {
       console.error('Error:', error);

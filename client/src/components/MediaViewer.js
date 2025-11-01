@@ -68,6 +68,7 @@ const MediaViewer = ({ image, video, videoType, title }) => {
               <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', maxWidth: '100%' }}>
                 <iframe
                   src={video}
+                  title={title || 'Video content'}
                   style={{ 
                     position: 'absolute',
                     top: 0,
@@ -112,6 +113,7 @@ const MediaViewer = ({ image, video, videoType, title }) => {
                 ) : (
                   <iframe
                     src={video}
+                    title={title || 'Video content'}
                     style={{ 
                       width: '90vw',
                       height: '90vh',

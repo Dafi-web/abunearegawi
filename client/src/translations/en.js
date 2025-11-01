@@ -1,4 +1,4 @@
-export default {
+const translations = {
   nav: {
     home: 'Home',
     events: 'Events',
@@ -10,6 +10,7 @@ export default {
     login: 'Login',
     register: 'Register',
     logout: 'Logout',
+    changePassword: 'Change Password',
   },
   home: {
     welcome: 'Welcome to Abune Aregawi Tigrayans Orthodox Church, Amsterdam',
@@ -163,5 +164,26 @@ export default {
     dateTime: 'Date & Time:',
     location: 'Location:',
   },
+  changePassword: {
+    title: 'Change Password',
+    subtitle: 'Update your account password',
+    currentPassword: 'Current Password',
+    newPassword: 'New Password',
+    confirmPassword: 'Confirm New Password',
+    enterCurrentPassword: 'Enter your current password',
+    enterNewPassword: 'Enter your new password',
+    confirmNewPassword: 'Confirm your new password',
+    passwordHint: 'Password must be at least 6 characters long',
+    changePassword: 'Change Password',
+    changing: 'Changing...',
+    success: 'Password changed successfully! Redirecting...',
+    error: 'Failed to change password. Please try again.',
+    passwordsNoMatch: 'New password and confirm password do not match',
+    passwordTooShort: 'Password must be at least 6 characters',
+    samePassword: 'New password must be different from current password',
+    loginRequired: 'Please log in to change your password',
+  },
 };
+
+export default translations;
 
