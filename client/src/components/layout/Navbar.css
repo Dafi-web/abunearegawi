@@ -1,0 +1,200 @@
+.navbar {
+  background: linear-gradient(135deg, #8b1538 0%, #c8102e 50%, #ffc72c 100%);
+  backdrop-filter: blur(20px);
+  color: white;
+  padding: 12px 0;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  box-shadow: 0 8px 32px rgba(139, 21, 56, 0.4);
+  border-bottom: 3px solid rgba(255, 255, 255, 0.2);
+  transition: all var(--transition-normal);
+}
+
+.navbar-scrolled {
+  padding: 8px 0;
+  box-shadow: 0 12px 40px rgba(139, 21, 56, 0.6);
+  border-bottom: 2px solid rgba(255, 199, 44, 0.4);
+}
+
+.navbar .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-brand {
+  font-size: 24px;
+  font-weight: 800;
+  color: white;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  transition: all var(--transition-normal);
+  letter-spacing: -0.5px;
+  position: relative;
+}
+
+.navbar-brand:hover {
+  transform: scale(1.02);
+  color: white;
+}
+
+.navbar-logo-wrapper {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rotating-text-svg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.rotating-text {
+  filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8));
+}
+
+@keyframes rotateAround {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.navbar-logo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 50%;
+  z-index: 1;
+  border: 4px solid #ffc72c;
+  box-shadow: 
+    0 0 0 3px rgba(255, 255, 255, 0.3),
+    0 0 0 6px rgba(255, 199, 44, 0.4),
+    0 0 25px rgba(255, 199, 44, 0.7),
+    0 5px 25px rgba(0, 0, 0, 0.5),
+    inset 0 0 20px rgba(255, 199, 44, 0.15);
+  transition: all var(--transition-normal);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 199, 44, 0.05) 100%);
+  padding: 2px;
+}
+
+.navbar-logo:hover {
+  transform: translate(-50%, -50%) scale(1.1) rotate(5deg);
+  border-color: #ffeb00;
+  box-shadow: 
+    0 0 0 4px rgba(255, 255, 255, 0.5),
+    0 0 0 8px rgba(255, 199, 44, 0.5),
+    0 0 35px rgba(255, 199, 44, 0.9),
+    0 8px 35px rgba(0, 0, 0, 0.6),
+    inset 0 0 30px rgba(255, 199, 44, 0.25);
+  filter: brightness(1.1);
+}
+
+.navbar-nav {
+  display: flex;
+  list-style: none;
+  gap: 8px;
+  align-items: center;
+}
+
+.navbar-nav li a {
+  color: white;
+  text-decoration: none;
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  transition: all var(--transition-fast);
+  font-weight: 800;
+  position: relative;
+  font-size: 16px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.5px;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.navbar-nav li a::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #ffc72c 0%, #ffeb00 100%);
+  transition: all var(--transition-normal);
+  transform: translateX(-50%);
+  box-shadow: 0 0 10px rgba(255, 199, 44, 0.5);
+}
+
+.navbar-nav li a:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.6);
+  transform: translateY(-2px);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.navbar-nav li a:hover::before {
+  width: 80%;
+}
+
+.user-name {
+  color: #ffc72c;
+  font-weight: 700;
+  padding: 10px 16px;
+  background: rgba(255, 199, 44, 0.2);
+  border-radius: 12px;
+  transition: all var(--transition-fast);
+  border: 2px solid rgba(255, 199, 44, 0.3);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.user-name:hover {
+  background: rgba(255, 199, 44, 0.3);
+  transform: translateY(-2px);
+  border-color: rgba(255, 199, 44, 0.5);
+  box-shadow: 0 4px 12px rgba(255, 199, 44, 0.4);
+}
+
+@media (max-width: 768px) {
+  .navbar-brand span {
+    display: none;
+  }
+  
+  .navbar-logo-wrapper {
+    width: 110px;
+    height: 110px;
+  }
+  
+  .navbar-logo {
+    width: 65px;
+    height: 65px;
+    border-width: 3px;
+  }
+  
+  .navbar-nav {
+    gap: 4px;
+  }
+  
+  .navbar-nav li a {
+    padding: 10px 16px;
+    font-size: 15px;
+    font-weight: 700;
+  }
+}

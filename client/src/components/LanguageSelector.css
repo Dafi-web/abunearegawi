@@ -1,0 +1,120 @@
+.language-selector {
+  position: relative;
+  display: inline-block;
+}
+
+.language-selector-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  color: white;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.language-selector-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.6);
+  transform: translateY(-2px);
+}
+
+.language-flag {
+  font-size: 18px;
+}
+
+.language-flag-img {
+  width: 24px;
+  height: 18px;
+  object-fit: cover;
+  border-radius: 3px;
+}
+
+.language-name {
+  font-size: 14px;
+}
+
+.language-arrow {
+  font-size: 10px;
+  margin-left: 4px;
+}
+
+.language-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  z-index: 1000;
+  min-width: 180px;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.language-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  background: white;
+  color: var(--dark-1);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: left;
+}
+
+.language-option:hover {
+  background: var(--light-2);
+}
+
+.language-option.active {
+  background: linear-gradient(135deg, #8b1538 0%, #c8102e 50%, #ffc72c 100%);
+  color: white;
+}
+
+.language-option.active:hover {
+  background: linear-gradient(135deg, #a01842 0%, #e01234 50%, #ffd850 100%);
+}
+
+.language-option .language-flag {
+  font-size: 20px;
+}
+
+@media (max-width: 768px) {
+  .language-selector-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+  
+  .language-name {
+    display: none;
+  }
+  
+  .language-dropdown {
+    right: 0;
+  }
+}
+

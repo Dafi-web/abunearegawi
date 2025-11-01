@@ -1,0 +1,71 @@
+.admin-members {
+  min-height: calc(100vh - 80px);
+  padding: 60px 0;
+  background: linear-gradient(135deg, var(--light-1) 0%, white 50%, var(--light-1) 100%);
+}
+
+.admin-members h1 {
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 900;
+  font-size: 42px;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.members-table {
+  background: white;
+  border-radius: 24px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  border: 2px solid rgba(102, 126, 234, 0.1);
+}
+
+.members-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.members-table th {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  color: white;
+  padding: 20px;
+  text-align: left;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}
+
+.members-table td {
+  padding: 20px;
+  border-bottom: 1px solid var(--light-2);
+}
+
+.members-table tr:last-child td {
+  border-bottom: none;
+}
+
+.members-table tr:hover {
+  background: rgba(102, 126, 234, 0.05);
+}
+
+.status-badge {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.status-paid {
+  background: linear-gradient(135deg, var(--success-color) 0%, #00a67e 100%);
+  color: white;
+}
+
+.status-unpaid {
+  background: linear-gradient(135deg, var(--error-color) 0%, #ff5252 100%);
+  color: white;
+}

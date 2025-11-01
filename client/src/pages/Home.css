@@ -1,0 +1,299 @@
+.home {
+  min-height: calc(100vh - 80px);
+}
+
+/* Hero Section */
+.hero {
+  background: linear-gradient(
+    135deg,
+    rgba(200, 16, 46, 0.95) 0%,
+    rgba(220, 20, 60, 0.95) 50%,
+    rgba(255, 199, 44, 0.95) 100%
+  ),
+  url('https://github.com/Dafi-web/logos/blob/main/c.jpeg?raw=true');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  color: white;
+  padding: 140px 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(102, 126, 234, 0.2), transparent 70%);
+  animation: pulse 4s ease-in-out infinite;
+}
+
+.hero .container {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-logo {
+  margin-bottom: 30px;
+  animation: fadeInDown 1s ease-in-out, float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.hero-logo img {
+  height: 200px;
+  width: auto;
+  border-radius: 30px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  background: rgba(255, 255, 255, 0.1);
+  padding: 20px;
+  backdrop-filter: blur(20px);
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  transition: all var(--transition-normal);
+}
+
+.hero-logo img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 30px 80px rgba(102, 126, 234, 0.5);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-50px) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero h1 {
+  font-size: 56px;
+  margin-bottom: 25px;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  font-weight: 900;
+  animation: fadeInUp 1s ease-in-out 0.3s both;
+  letter-spacing: -1px;
+  background: linear-gradient(135deg, #fff 0%, #e0e0e0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero p {
+  font-size: 22px;
+  margin-bottom: 40px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  animation: fadeInUp 1s ease-in-out 0.5s both;
+  font-weight: 300;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  animation: fadeInUp 1s ease-in-out 0.7s both;
+}
+
+/* Scroll to Top Button */
+.scroll-to-top {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  width: 50px;
+  height: 50px;
+  background: var(--primary-gradient);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+  z-index: 1000;
+  transition: all var(--transition-normal);
+  opacity: 0;
+  transform: translateY(20px) scale(0.8);
+  animation: fadeInUpButton 0.3s ease-out forwards;
+}
+
+@keyframes fadeInUpButton {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.scroll-to-top:hover {
+  transform: translateY(-5px) scale(1.1);
+  box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6);
+}
+
+.scroll-to-top:active {
+  transform: translateY(-2px) scale(1.05);
+}
+
+.scroll-to-top svg {
+  width: 24px;
+  height: 24px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+/* Features Section */
+.features {
+  padding: 80px 0;
+  background: white;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 40px;
+  margin-top: 40px;
+}
+
+.feature-card {
+  background: white;
+  padding: 40px;
+  border-radius: 24px;
+  text-align: center;
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-normal);
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--primary-gradient);
+  transform: scaleX(0);
+  transition: transform var(--transition-normal);
+}
+
+.feature-card:hover {
+  transform: translateY(-10px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--primary-color);
+}
+
+.feature-card:hover::before {
+  transform: scaleX(1);
+}
+
+.feature-card h3 {
+  margin-bottom: 20px;
+  color: var(--dark-1);
+  font-size: 28px;
+  font-weight: 800;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.feature-card p {
+  color: #666;
+  font-size: 16px;
+  line-height: 1.8;
+  margin-bottom: 25px;
+}
+
+.featured-events,
+.recent-posts {
+  padding: 80px 0;
+}
+
+.featured-events h2,
+.recent-posts h2 {
+  text-align: center;
+  margin-bottom: 50px;
+  font-size: 42px;
+  font-weight: 900;
+  color: var(--dark-1);
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -1px;
+}
+
+.events-grid,
+.posts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 40px;
+}
+
+.post-type {
+  display: inline-block;
+  background: var(--primary-gradient);
+  color: white;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  text-transform: uppercase;
+  margin-bottom: 15px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 38px;
+  }
+  
+  .hero p {
+    font-size: 18px;
+  }
+  
+  .hero-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .scroll-to-top {
+    bottom: 20px;
+    right: 20px;
+    width: 45px;
+    height: 45px;
+  }
+  
+  .feature-grid,
+  .events-grid,
+  .posts-grid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+}

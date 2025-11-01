@@ -1,0 +1,94 @@
+.membership-page {
+  min-height: calc(100vh - 80px);
+  padding: 60px 0;
+  background: linear-gradient(180deg, white 0%, var(--light-1) 100%);
+}
+
+.membership-card {
+  max-width: 700px;
+  margin: 0 auto;
+  background: white;
+  padding: 50px;
+  border-radius: 30px;
+  box-shadow: var(--shadow-xl);
+  border: 2px solid rgba(102, 126, 234, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.membership-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: var(--primary-gradient);
+}
+
+.membership-card h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 36px;
+  font-weight: 900;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -1px;
+}
+
+.membership-info {
+  margin-bottom: 35px;
+  font-size: 17px;
+  line-height: 1.8;
+  color: var(--dark-1);
+  text-align: center;
+  padding: 25px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+  border-radius: 20px;
+  border: 2px solid rgba(102, 126, 234, 0.1);
+}
+
+.membership-info strong {
+  color: var(--primary-color);
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.card-element-container,
+.payment-element-container {
+  padding: 20px;
+  border: 2px solid var(--light-2);
+  border-radius: 16px;
+  background: white;
+  margin-bottom: 20px;
+  transition: all var(--transition-normal);
+}
+
+.card-element-container:focus-within,
+.payment-element-container:focus-within {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.payment-methods-info {
+  margin-top: 15px;
+  font-size: 14px;
+  color: #666;
+  font-style: italic;
+  padding: 12px;
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: 10px;
+  border-left: 4px solid var(--primary-color);
+}
+
+.payment-info {
+  margin-top: 30px;
+  text-align: center;
+  color: #666;
+  font-size: 15px;
+  padding: 20px;
+  background: var(--light-1);
+  border-radius: 16px;
+}
