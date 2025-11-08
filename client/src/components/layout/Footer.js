@@ -97,6 +97,49 @@ const Footer = () => {
             </div>
           </div>
         </div>
+        <div className="footer-business-card">
+          <div className="business-card-visual" aria-hidden="true">
+            <div className="business-card-light"></div>
+            <div className="business-card-pattern"></div>
+            <div className="business-card-reflection"></div>
+            <div className="business-card-badge">
+              dafi<span>Tech</span>
+            </div>
+            <p className="business-card-tagline">
+              Crafting digital experiences with purpose
+            </p>
+          </div>
+          <div className="business-card-content">
+            <h4>Let&apos;s build your next idea</h4>
+            <p>
+              Partner with dafiTech for modern web solutions, purposeful branding, and technology that moves your mission forward.
+            </p>
+            <ul className="business-card-contact">
+              <li>
+                <span className="contact-chip">Email</span>
+                <a href="mailto:contact@dafitech.org">contact@dafitech.org</a>
+              </li>
+              <li>
+                <span className="contact-chip">Phone</span>
+                <a href="tel:+31686371240">06 8637 1240</a>
+              </li>
+              <li>
+                <span className="contact-chip">Location</span>
+                <span>Amsterdam, Netherlands</span>
+              </li>
+            </ul>
+            <div className="business-card-actions">
+              <a
+                className="business-card-button"
+                href="https://sub.dafitech.org/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                View Portfolio
+              </a>
+            </div>
+          </div>
+        </div>
         <div className="footer-bottom">
           <p>&copy; {new Date().getFullYear()} {t('footer.about')}. {t('footer.rights')}</p>
           <p className="designer-credit">
