@@ -34,6 +34,7 @@ const Dashboard = () => {
           <Link to="/admin/posts" className="btn btn-primary">Manage Posts</Link>
           <Link to="/admin/calendar" className="btn btn-primary">Manage Calendar</Link>
           <Link to="/admin/members" className="btn btn-primary">Manage Members</Link>
+          <Link to="/admin/users" className="btn btn-primary">Manage Users</Link>
         </div>
         {stats && (
           <div className="stats-grid">
@@ -61,5 +62,11 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
+
+
+
+
+
 
 

@@ -17,6 +17,7 @@ import AdminDashboard from './pages/admin/Dashboard';
 import AdminPosts from './pages/admin/Posts';
 import AdminCalendar from './pages/admin/Calendar';
 import AdminMembers from './pages/admin/Members';
+import AdminUsers from './pages/admin/Users';
 import Notifications from './pages/Notifications';
 import PaymentSuccess from './pages/PaymentSuccess';
 import ChangePassword from './pages/ChangePassword';
@@ -79,6 +80,14 @@ function App() {
                   element={
                     <AdminRoute>
                       <AdminMembers />
+                    </AdminRoute>
+                  }
+                />
+                <Route
+                  path="/admin/users"
+                  element={
+                    <AdminRoute>
+                      <AdminUsers />
                     </AdminRoute>
                   }
                 />
