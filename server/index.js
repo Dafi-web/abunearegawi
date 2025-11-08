@@ -9,37 +9,42 @@ const app = express();
 
 // Middleware - CORS configuration
 // Support multiple origins for development and production
-const additionalOrigins = [
+const envOrigins = process.env.FRONTEND_URL
+  ? process.env.FRONTEND_URL.split(',').map(origin => origin.trim()).filter(Boolean)
+  : [];
+
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
   'https://abunearegawi.nl',
   'https://www.abunearegawi.nl',
+  ...envOrigins,
 ];
-
-const allowedOrigins = process.env.FRONTEND_URL 
-  ? [process.env.FRONTEND_URL, 'http://localhost:3000', ...additionalOrigins]
-  : ['http://localhost:3000', ...additionalOrigins];
 
 const corsOptions = {
   origin: function (origin, callback) {
     // Allow requests with no origin (mobile apps, curl, etc.)
     if (!origin) return callback(null, true);
     
+    const originToCheck = origin.toLowerCase();
+
     // Allow localhost for development
-    if (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) {
+    if (originToCheck.startsWith('http://localhost:') || originToCheck.startsWith('http://127.0.0.1:')) {
       return callback(null, true);
     }
     
     // Allow all Vercel deployments (production and preview)
-    if (origin.includes('.vercel.app')) {
+    if (originToCheck.includes('.vercel.app')) {
       return callback(null, true);
     }
-    
+
     // Allow primary domain and subdomains
-    if (origin.endsWith('.abunearegawi.nl') || origin === 'https://abunearegawi.nl') {
+    if (originToCheck === 'https://abunearegawi.nl' || originToCheck.endsWith('.abunearegawi.nl')) {
       return callback(null, true);
     }
     
-    // Allow exact match from environment variable
-    if (allowedOrigins.indexOf(origin) !== -1) {
+    // Allow exact match from configured origins
+    if (allowedOrigins.includes(originToCheck)) {
       return callback(null, true);
     }
     
