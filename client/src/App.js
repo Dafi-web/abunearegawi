@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
@@ -30,6 +30,10 @@ const stripePromise = STRIPE_PUBLISHABLE_KEY && !STRIPE_PUBLISHABLE_KEY.includes
   : null;
 
 function App() {
+  useEffect(() => {
+    document.title = 'Abune Aregawi Church';
+  }, []);
+
   return (
     <Elements stripe={stripePromise || undefined}>
       <LanguageProvider>
