@@ -9,9 +9,14 @@ const app = express();
 
 // Middleware - CORS configuration
 // Support multiple origins for development and production
+const additionalOrigins = [
+  'https://abunearegawi.nl',
+  'https://www.abunearegawi.nl',
+];
+
 const allowedOrigins = process.env.FRONTEND_URL 
-  ? [process.env.FRONTEND_URL, 'http://localhost:3000']
-  : ['http://localhost:3000'];
+  ? [process.env.FRONTEND_URL, 'http://localhost:3000', ...additionalOrigins]
+  : ['http://localhost:3000', ...additionalOrigins];
 
 const corsOptions = {
   origin: function (origin, callback) {
@@ -25,6 +30,11 @@ const corsOptions = {
     
     // Allow all Vercel deployments (production and preview)
     if (origin.includes('.vercel.app')) {
+      return callback(null, true);
+    }
+    
+    // Allow primary domain and subdomains
+    if (origin.endsWith('.abunearegawi.nl') || origin === 'https://abunearegawi.nl') {
       return callback(null, true);
     }
     
