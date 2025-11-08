@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
 import LanguageSelector from '../LanguageSelector';
@@ -11,7 +11,9 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const userMenuRef = useRef(null);
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -40,9 +42,21 @@ const Navbar = () => {
     };
   }, [showUserMenu]);
 
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
+
   const handleLogout = () => {
     logout();
     navigate('/');
+  };
+
+  const handleNavLinkClick = () => {
+    setMenuOpen(false);
+  };
+
+  const toggleMenu = () => {
+    setMenuOpen((prev) => !prev);
   };
 
   return (
@@ -67,14 +81,25 @@ const Navbar = () => {
             />
           </div>
         </Link>
-        <ul className="navbar-nav">
-          <li><Link to="/">{t('nav.home')}</Link></li>
-          <li><Link to="/events">{t('nav.events')}</Link></li>
-          <li><Link to="/calendar">{t('nav.calendar')}</Link></li>
-          <li><Link to="/donate">{t('nav.donate')}</Link></li>
+        <button
+          className={`menu-toggle ${menuOpen ? 'open' : ''}`}
+          onClick={toggleMenu}
+          type="button"
+          aria-label="Toggle navigation menu"
+          aria-expanded={menuOpen}
+        >
+          <span />
+          <span />
+          <span />
+        </button>
+        <ul className={`navbar-nav ${menuOpen ? 'active' : ''}`}>
+          <li><Link to="/" onClick={handleNavLinkClick}>{t('nav.home')}</Link></li>
+          <li><Link to="/events" onClick={handleNavLinkClick}>{t('nav.events')}</Link></li>
+          <li><Link to="/calendar" onClick={handleNavLinkClick}>{t('nav.calendar')}</Link></li>
+          <li><Link to="/donate" onClick={handleNavLinkClick}>{t('nav.donate')}</Link></li>
           {isAuthenticated ? (
             <>
-              <li><Link to="/membership">{t('nav.membership')}</Link></li>
+              <li><Link to="/membership" onClick={handleNavLinkClick}>{t('nav.membership')}</Link></li>
               <li className="user-menu-container" ref={userMenuRef}>
                 <button
                   className="user-icon-btn"
@@ -100,7 +125,10 @@ const Navbar = () => {
                     <Link
                       to="/change-password"
                       className="user-dropdown-item"
-                      onClick={() => setShowUserMenu(false)}
+                      onClick={() => {
+                        setShowUserMenu(false);
+                        handleNavLinkClick();
+                      }}
                     >
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M12 15H7.5C6.83696 15 6.20107 15.2634 5.73223 15.7322C5.26339 16.2011 5 16.837 5 17.5V19.5C5 19.8978 5.15804 20.2794 5.43934 20.5607C5.72064 20.842 6.10218 21 6.5 21H17.5C17.8978 21 18.2794 20.842 18.5607 20.5607C18.842 20.2794 19 19.8978 19 19.5V17.5C19 16.837 18.7366 16.2011 18.2678 15.7322C17.7989 15.2634 17.163 15 16.5 15H12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -112,7 +140,10 @@ const Navbar = () => {
                       <Link
                         to="/admin/dashboard"
                         className="user-dropdown-item"
-                        onClick={() => setShowUserMenu(false)}
+                        onClick={() => {
+                          setShowUserMenu(false);
+                          handleNavLinkClick();
+                        }}
                       >
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -128,6 +159,7 @@ const Navbar = () => {
                       onClick={() => {
                         setShowUserMenu(false);
                         handleLogout();
+                        handleNavLinkClick();
                       }}
                     >
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -143,8 +175,8 @@ const Navbar = () => {
             </>
           ) : (
             <>
-              <li><Link to="/login">{t('nav.login')}</Link></li>
-              <li><Link to="/register">{t('nav.register')}</Link></li>
+              <li><Link to="/login" onClick={handleNavLinkClick}>{t('nav.login')}</Link></li>
+              <li><Link to="/register" onClick={handleNavLinkClick}>{t('nav.register')}</Link></li>
             </>
           )}
           <li>
@@ -152,6 +184,7 @@ const Navbar = () => {
           </li>
         </ul>
       </div>
+      {menuOpen && <div className="navbar-overlay" onClick={toggleMenu} aria-hidden="true" />}
     </nav>
   );
 };
