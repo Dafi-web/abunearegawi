@@ -99,7 +99,19 @@ const Footer = () => {
         </div>
         <div className="footer-bottom">
           <p>&copy; {new Date().getFullYear()} {t('footer.about')}. {t('footer.rights')}</p>
-          <p className="designer-credit">Designed by <span className="designer-name">dafiTech</span> (dawit)</p>
+          <p className="designer-credit">
+            Designed by{' '}
+            <a
+              href="https://sub.dafitech.org/"
+              className="designer-link"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Visit Dawit's portfolio"
+            >
+              <span className="designer-name">dafiTech</span>
+            </a>{' '}
+            (Dawit)
+          </p>
         </div>
       </div>
     </footer>

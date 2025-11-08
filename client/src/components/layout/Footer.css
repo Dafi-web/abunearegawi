@@ -150,6 +150,38 @@
   letter-spacing: 1px;
 }
 
+.designer-link {
+  color: inherit;
+  text-decoration: none;
+  position: relative;
+  padding: 0 4px;
+  border-radius: 6px;
+  transition: all var(--transition-fast);
+}
+
+.designer-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 2px;
+  background: rgba(255, 199, 44, 0.6);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform var(--transition-fast);
+}
+
+.designer-link:hover {
+  color: #ffe8a6;
+  box-shadow: 0 4px 12px rgba(255, 199, 44, 0.35);
+  transform: translateY(-1px);
+}
+
+.designer-link:hover::after {
+  transform: scaleX(1);
+}
+
 .footer-section ul {
   list-style: none;
   padding: 0;
