@@ -8,21 +8,20 @@
   align-items: center;
   gap: 8px;
   padding: 8px 16px;
-  background: rgba(255, 255, 255, 0.15);
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 12px;
-  color: white;
+  background: linear-gradient(135deg, #ffc72c 0%, #ff9f1c 100%);
+  border: 0;
+  border-radius: 16px;
+  color: #2b1b4b;
   font-weight: 700;
   font-size: 14px;
   cursor: pointer;
   transition: all var(--transition-fast);
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 6px 18px rgba(255, 179, 71, 0.4);
 }
 
 .language-selector-btn:hover {
-  background: rgba(255, 255, 255, 0.25);
-  border-color: rgba(255, 255, 255, 0.6);
   transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(255, 179, 71, 0.55);
 }
 
 .language-flag {
@@ -107,6 +106,8 @@
   .language-selector-btn {
     padding: 6px 12px;
     font-size: 12px;
+    border-radius: 14px;
+    box-shadow: 0 4px 14px rgba(255, 179, 71, 0.4);
   }
   
   .language-name {
