@@ -6,7 +6,8 @@ import { useLanguage } from '../context/LanguageContext';
 import api from '../utils/api';
 import './Donate.css';
 
-const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY || 'pk_test_your_key');
+const publishableKey = process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY;
+const stripePromise = publishableKey ? loadStripe(publishableKey) : null;
 
 const DonateFormInternal = ({ clientSecret: clientSecretProp, setClientSecret: setParentClientSecret }) => {
   const { t } = useLanguage();
@@ -225,6 +226,10 @@ const Donate = () => {
           <div className="donate-card">
             <div className="alert alert-danger">
               {t('donate.stripeNotConfigured')}
+              <br />
+              <small>
+                Please set <code>REACT_APP_STRIPE_PUBLISHABLE_KEY</code> with your live Stripe key in the Vercel environment.
+              </small>
             </div>
           </div>
         </div>
