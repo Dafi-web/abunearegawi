@@ -104,18 +104,71 @@
 
 @media (max-width: 768px) {
   .language-selector-btn {
-    padding: 6px 12px;
-    font-size: 12px;
+    padding: 8px 14px;
+    font-size: 13px;
     border-radius: 14px;
-    box-shadow: 0 4px 14px rgba(255, 179, 71, 0.4);
+    background: linear-gradient(135deg, #8b1538 0%, #c8102e 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(139, 21, 56, 0.5);
+    font-weight: 700;
+  }
+  
+  .language-selector-btn:hover {
+    background: linear-gradient(135deg, #a01842 0%, #e01234 100%);
+    box-shadow: 0 6px 18px rgba(139, 21, 56, 0.6);
   }
   
   .language-name {
-    display: none;
+    display: inline-block;
+    color: #ffffff;
+    font-weight: 700;
+  }
+  
+  .language-flag {
+    font-size: 20px;
+  }
+  
+  .language-arrow {
+    color: #ffffff;
+    font-size: 11px;
   }
   
   .language-dropdown {
     right: 0;
+    min-width: 200px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  }
+  
+  .language-option {
+    padding: 14px 18px;
+    font-size: 15px;
+    color: #1a1a2e;
+    background: #ffffff;
+    border-bottom: 1px solid #e9ecef;
+  }
+  
+  .language-option:last-child {
+    border-bottom: none;
+  }
+  
+  .language-option:hover {
+    background: #f8f9fa;
+    color: #8b1538;
+  }
+  
+  .language-option.active {
+    background: linear-gradient(135deg, #8b1538 0%, #c8102e 100%);
+    color: #ffffff;
+    font-weight: 700;
+  }
+  
+  .language-option.active:hover {
+    background: linear-gradient(135deg, #a01842 0%, #e01234 100%);
+    color: #ffffff;
+  }
+  
+  .language-option .language-flag {
+    font-size: 22px;
   }
 }
 
