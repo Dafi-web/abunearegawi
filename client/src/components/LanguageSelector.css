@@ -107,20 +107,26 @@
     padding: 8px 14px;
     font-size: 13px;
     border-radius: 14px;
-    background: linear-gradient(135deg, #8b1538 0%, #c8102e 100%);
-    color: #ffffff;
+    background: #8b1538 !important;
+    color: #ffffff !important;
     box-shadow: 0 4px 14px rgba(139, 21, 56, 0.5);
     font-weight: 700;
+    border: 2px solid #8b1538;
   }
   
   .language-selector-btn:hover {
-    background: linear-gradient(135deg, #a01842 0%, #e01234 100%);
+    background: #a01842 !important;
+    color: #ffffff !important;
     box-shadow: 0 6px 18px rgba(139, 21, 56, 0.6);
+  }
+  
+  .language-selector-btn * {
+    color: #ffffff !important;
   }
   
   .language-name {
     display: inline-block;
-    color: #ffffff;
+    color: #ffffff !important;
     font-weight: 700;
   }
   
@@ -129,7 +135,7 @@
   }
   
   .language-arrow {
-    color: #ffffff;
+    color: #ffffff !important;
     font-size: 11px;
   }
   
