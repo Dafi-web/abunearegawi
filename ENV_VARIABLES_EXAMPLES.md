@@ -187,6 +187,53 @@ Value: Abune Aregawi Church
 
 ---
 
+#### 7. Cloudinary Configuration (Required for Image/Video Uploads)
+
+**Key:** `CLOUDINARY_CLOUD_NAME`  
+**Value:** `your-cloud-name`
+
+**Example Format:**
+```
+Key:   CLOUDINARY_CLOUD_NAME
+Value: abunearegawi-church
+```
+
+**Note:** Get from [Cloudinary Dashboard](https://cloudinary.com/console) → Settings → Account Details
+
+---
+
+**Key:** `CLOUDINARY_API_KEY`  
+**Value:** `123456789012345`
+
+**Example Format:**
+```
+Key:   CLOUDINARY_API_KEY
+Value: 123456789012345
+```
+
+**Note:** Get from [Cloudinary Dashboard](https://cloudinary.com/console) → Settings → API Keys
+
+---
+
+**Key:** `CLOUDINARY_API_SECRET`  
+**Value:** `abcdefghijklmnopqrstuvwxyz123456`
+
+**Example Format:**
+```
+Key:   CLOUDINARY_API_SECRET
+Value: abcdefghijklmnopqrstuvwxyz123456
+```
+
+**Note:** Get from [Cloudinary Dashboard](https://cloudinary.com/console) → Settings → API Keys  
+**⚠️ Important:** Keep this secret secure and never expose it publicly
+
+**Get Cloudinary Credentials:**
+1. Sign up at [cloudinary.com](https://cloudinary.com) (free tier available)
+2. Go to Dashboard → Settings → Account Details
+3. Copy your Cloud Name, API Key, and API Secret
+
+---
+
 ## 🌐 Vercel (Frontend) Environment Variables
 
 ### Complete List with Example Values:
@@ -271,6 +318,15 @@ Value: your-app-password
 
 Key: EMAIL_FROM_NAME
 Value: Abune Aregawi Church
+
+Key: CLOUDINARY_CLOUD_NAME
+Value: your-cloudinary-cloud-name
+
+Key: CLOUDINARY_API_KEY
+Value: your-cloudinary-api-key
+
+Key: CLOUDINARY_API_SECRET
+Value: your-cloudinary-api-secret
 ```
 
 ---
@@ -367,6 +423,9 @@ Value: https://api.com
 | **Render** | Frontend URL | `FRONTEND_URL` | `https://app.vercel.app` |
 | **Render** | Stripe Secret | `STRIPE_SECRET_KEY` | `sk_test_51...` |
 | **Render** | Stripe Publishable | `STRIPE_PUBLISHABLE_KEY` | `pk_test_51...` |
+| **Render** | Cloudinary Cloud Name | `CLOUDINARY_CLOUD_NAME` | `your-cloud-name` |
+| **Render** | Cloudinary API Key | `CLOUDINARY_API_KEY` | `123456789012345` |
+| **Render** | Cloudinary API Secret | `CLOUDINARY_API_SECRET` | `abcdefghijklmnop...` |
 | **Vercel** | API URL | `REACT_APP_API_URL` | `https://api.onrender.com/api` |
 | **Vercel** | Stripe Key | `REACT_APP_STRIPE_PUBLISHABLE_KEY` | `pk_test_51...` |
 

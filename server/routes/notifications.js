@@ -137,3 +137,11 @@ router.put('/read-all', auth, async (req, res) => {
 module.exports = router;
 
 
+
+
+
+
+
+
+
+

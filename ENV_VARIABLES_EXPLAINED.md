@@ -50,6 +50,9 @@ EMAIL_PORT = 587
 EMAIL_USER = your_email@gmail.com
 EMAIL_PASS = your_app_password
 EMAIL_FROM_NAME = Abune Aregawi Church
+CLOUDINARY_CLOUD_NAME = your_cloudinary_cloud_name
+CLOUDINARY_API_KEY = your_cloudinary_api_key
+CLOUDINARY_API_SECRET = your_cloudinary_api_secret
 ```
 
 **Important:**
@@ -90,6 +93,9 @@ EMAIL_PORT=587
 EMAIL_USER=your_email@gmail.com
 EMAIL_PASS=your_app_password
 EMAIL_FROM_NAME=Abune Aregawi Church
+CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 ```
 
 **Used when:** Running `npm start` or `npm run dev` in the `server` directory
