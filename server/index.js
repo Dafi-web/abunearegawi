@@ -2,8 +2,10 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const path = require('path');
 
-dotenv.config();
+// Load .env file from server directory
+dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 const app = express();
 
@@ -101,6 +103,23 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/church_db
 .catch(err => console.error('MongoDB connection error:', err));
 
 const PORT = process.env.PORT || 5001;
+
+// Check Cloudinary configuration on startup
+const cloudinaryConfigured = 
+  process.env.CLOUDINARY_CLOUD_NAME && 
+  process.env.CLOUDINARY_API_KEY && 
+  process.env.CLOUDINARY_API_SECRET;
+
+if (!cloudinaryConfigured) {
+  console.warn('⚠️  WARNING: Cloudinary is not fully configured!');
+  console.warn('   Missing environment variables:');
+  if (!process.env.CLOUDINARY_CLOUD_NAME) console.warn('   - CLOUDINARY_CLOUD_NAME');
+  if (!process.env.CLOUDINARY_API_KEY) console.warn('   - CLOUDINARY_API_KEY');
+  if (!process.env.CLOUDINARY_API_SECRET) console.warn('   - CLOUDINARY_API_SECRET');
+  console.warn('   Image/video uploads will fail until these are set.');
+} else {
+  console.log('✅ Cloudinary configured successfully');
+}
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
