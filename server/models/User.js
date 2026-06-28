@@ -29,10 +29,10 @@ const userSchema = new mongoose.Schema({
   memberSince: {
     type: Date,
   },
-  stripeCustomerId: {
+  mollieCustomerId: {
     type: String,
   },
-  stripeSubscriptionId: {
+  mollieSubscriptionId: {
     type: String,
   },
   subscriptionStatus: {

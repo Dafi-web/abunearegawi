@@ -4,7 +4,7 @@ const paymentSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: false, // Optional for anonymous donations
+    required: false,
   },
   type: {
     type: String,
@@ -24,14 +24,14 @@ const paymentSchema = new mongoose.Schema({
     enum: ['pending', 'completed', 'failed', 'refunded'],
     default: 'pending',
   },
-  stripePaymentIntentId: {
+  molliePaymentId: {
     type: String,
   },
-  stripeSubscriptionId: {
+  mollieSubscriptionId: {
     type: String,
   },
   month: {
-    type: Number, // 1-12 for monthly subscriptions
+    type: Number,
   },
   year: {
     type: Number,
@@ -45,4 +45,3 @@ const paymentSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model('Payment', paymentSchema);
-

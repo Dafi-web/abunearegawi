@@ -134,7 +134,7 @@ router.put(
       } else {
         user.memberSince = null;
         user.subscriptionStatus = null;
-        user.stripeSubscriptionId = null;
+        user.mollieSubscriptionId = null;
       }
 
       await user.save();

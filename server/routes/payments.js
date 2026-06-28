@@ -1,18 +1,243 @@
 const express = require('express');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const mongoose = require('mongoose');
+const { createMollieClient, SequenceType } = require('@mollie/api-client');
 const { body, validationResult } = require('express-validator');
 const Payment = require('../models/Payment');
 const User = require('../models/User');
 const { auth } = require('../middleware/auth');
 
-// Optional auth middleware for donations
+const MEMBERSHIP_AMOUNT = '10.00';
+
+const getMollieClient = () => {
+  const apiKey = process.env.MOLLIE_API_KEY;
+  if (!apiKey || apiKey.includes('your_mollie')) return null;
+  return createMollieClient({ apiKey });
+};
+
+const getBackendUrl = () =>
+  process.env.BACKEND_URL || process.env.RENDER_EXTERNAL_URL || 'http://localhost:5001';
+
+const getFrontendUrl = () =>
+  (process.env.FRONTEND_URL || 'http://localhost:3000').split(',')[0].trim();
+
+const mapMollieMethod = (method) => {
+  if (!method) return 'other';
+  if (method === 'ideal') return 'ideal';
+  if (['creditcard', 'applepay', 'paypal', 'bancontact'].includes(method)) return 'card';
+  return 'other';
+};
+
+const resolveUserId = (userId) =>
+  userId && mongoose.Types.ObjectId.isValid(userId) ? userId : null;
+
+const paymentStatusFromMollie = (mollieStatus) => {
+  if (mollieStatus === 'paid') return 'completed';
+  if (mollieStatus === 'failed' || mollieStatus === 'canceled' || mollieStatus === 'expired') {
+    return 'failed';
+  }
+  return 'pending';
+};
+
+const syncMollieDonation = async (molliePayment, userId = null) => {
+  const status = paymentStatusFromMollie(molliePayment.status);
+  const resolvedUserId = resolveUserId(userId);
+
+  let payment = await Payment.findOne({ molliePaymentId: molliePayment.id });
+  if (payment) {
+    payment.status = status;
+    payment.paymentMethod = mapMollieMethod(molliePayment.method);
+    await payment.save();
+    return payment;
+  }
+
+  payment = new Payment({
+    user: resolvedUserId,
+    type: 'donation',
+    amount: parseFloat(molliePayment.amount.value),
+    status,
+    molliePaymentId: molliePayment.id,
+    paymentMethod: mapMollieMethod(molliePayment.method),
+  });
+  await payment.save();
+  return payment;
+};
+
+const syncSubscriptionPayment = async (molliePayment, user) => {
+  const status = paymentStatusFromMollie(molliePayment.status);
+  const now = new Date();
+
+  let payment = await Payment.findOne({ molliePaymentId: molliePayment.id });
+  if (payment) {
+    payment.status = status;
+    payment.paymentMethod = mapMollieMethod(molliePayment.method);
+    await payment.save();
+    return payment;
+  }
+
+  payment = new Payment({
+    user: user._id,
+    type: 'subscription',
+    amount: parseFloat(molliePayment.amount.value),
+    status,
+    molliePaymentId: molliePayment.id,
+    mollieSubscriptionId: molliePayment.subscriptionId || user.mollieSubscriptionId,
+    month: now.getMonth() + 1,
+    year: now.getFullYear(),
+    paymentMethod: mapMollieMethod(molliePayment.method),
+  });
+  await payment.save();
+  return payment;
+};
+
+const getOrCreateMollieCustomer = async (mollieClient, user) => {
+  if (user.mollieCustomerId) {
+    try {
+      return await mollieClient.customers.get(user.mollieCustomerId);
+    } catch (error) {
+      console.warn(`Mollie customer ${user.mollieCustomerId} not found, creating new one`);
+    }
+  }
+
+  const customer = await mollieClient.customers.create({
+    name: user.name,
+    email: user.email,
+    metadata: { userId: user._id.toString() },
+  });
+
+  user.mollieCustomerId = customer.id;
+  await user.save();
+  return customer;
+};
+
+const createMollieCheckoutPayment = async ({
+  mollieClient,
+  amount,
+  description,
+  metadata,
+  customerId,
+  sequenceType,
+}) => {
+  const frontendUrl = getFrontendUrl();
+  const paymentData = {
+    amount: {
+      currency: 'EUR',
+      value: parseFloat(amount).toFixed(2),
+    },
+    description,
+    redirectUrl: `${frontendUrl}/payment-success`,
+    webhookUrl: `${getBackendUrl()}/api/payments/mollie-webhook`,
+    metadata,
+  };
+
+  let molliePayment;
+  if (customerId) {
+    molliePayment = await mollieClient.customerPayments.create({
+      customerId,
+      ...paymentData,
+      sequenceType: sequenceType || SequenceType.oneoff,
+    });
+  } else {
+    molliePayment = await mollieClient.payments.create(paymentData);
+  }
+
+  await mollieClient.payments.update(molliePayment.id, {
+    redirectUrl: `${frontendUrl}/payment-success?paymentId=${molliePayment.id}`,
+  });
+
+  return molliePayment;
+};
+
+const handleMembershipFirstPayment = async (molliePayment) => {
+  const userId = resolveUserId(molliePayment.metadata?.userId);
+  if (!userId) return;
+
+  const user = await User.findById(userId);
+  if (!user) return;
+
+  await syncSubscriptionPayment(molliePayment, user);
+
+  if (molliePayment.status !== 'paid') return;
+
+  const mollieClient = getMollieClient();
+  if (!mollieClient) return;
+
+  if (molliePayment.customerId) {
+    user.mollieCustomerId = molliePayment.customerId;
+  }
+
+  if (!user.mollieSubscriptionId && user.mollieCustomerId) {
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() + 1);
+
+    const subscription = await mollieClient.customerSubscriptions.create({
+      customerId: user.mollieCustomerId,
+      amount: { currency: 'EUR', value: MEMBERSHIP_AMOUNT },
+      interval: '1 month',
+      description: 'Church Membership - Monthly',
+      webhookUrl: `${getBackendUrl()}/api/payments/mollie-webhook`,
+      startDate: startDate.toISOString().split('T')[0],
+    });
+
+    user.mollieSubscriptionId = subscription.id;
+  }
+
+  user.isMember = true;
+  user.subscriptionStatus = 'active';
+  if (!user.memberSince) {
+    user.memberSince = new Date();
+  }
+  await user.save();
+};
+
+const handleSubscriptionPayment = async (molliePayment) => {
+  let user = null;
+
+  if (molliePayment.subscriptionId) {
+    user = await User.findOne({ mollieSubscriptionId: molliePayment.subscriptionId });
+  }
+  if (!user && molliePayment.customerId) {
+    user = await User.findOne({ mollieCustomerId: molliePayment.customerId });
+  }
+  if (!user) return;
+
+  await syncSubscriptionPayment(molliePayment, user);
+
+  if (molliePayment.status === 'paid') {
+    user.subscriptionStatus = 'active';
+    user.isMember = true;
+    await user.save();
+  } else if (molliePayment.status === 'failed') {
+    user.subscriptionStatus = 'past_due';
+    await user.save();
+  }
+};
+
+const processMolliePayment = async (molliePayment) => {
+  const type = molliePayment.metadata?.type;
+
+  if (type === 'donation') {
+    return syncMollieDonation(molliePayment, molliePayment.metadata?.userId);
+  }
+
+  if (type === 'membership_first') {
+    await handleMembershipFirstPayment(molliePayment);
+    return Payment.findOne({ molliePaymentId: molliePayment.id });
+  }
+
+  if (molliePayment.subscriptionId || type === 'subscription') {
+    await handleSubscriptionPayment(molliePayment);
+    return Payment.findOne({ molliePaymentId: molliePayment.id });
+  }
+
+  return null;
+};
+
 const optionalAuth = async (req, res, next) => {
   try {
     const token = req.header('Authorization')?.replace('Bearer ', '');
     if (token) {
       const jwt = require('jsonwebtoken');
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      const User = require('../models/User');
       const user = await User.findById(decoded.userId).select('-password');
       if (user) {
         req.user = user;
@@ -26,190 +251,135 @@ const optionalAuth = async (req, res, next) => {
 
 const router = express.Router();
 
-// Create payment intent (for Payment Element)
-router.post('/create-intent', optionalAuth, [
+router.post('/create-mollie-payment', optionalAuth, [
   body('amount').isFloat({ min: 1 }).withMessage('Amount must be at least 1 EUR'),
 ], async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
+    }
+
+    const mollieClient = getMollieClient();
+    if (!mollieClient) {
+      return res.status(500).json({
+        message: 'Mollie is not configured. Please add MOLLIE_API_KEY to your server environment variables.',
+      });
     }
 
     const { amount } = req.body;
-    const amountInCents = Math.round(amount * 100);
+    const userId = req.user ? req.user._id.toString() : '';
 
-    // Check if Stripe is configured
-    if (!process.env.STRIPE_SECRET_KEY || process.env.STRIPE_SECRET_KEY.includes('your_stripe')) {
-      return res.status(500).json({ 
-        message: 'Stripe is not configured. Please add your Stripe secret key to the .env file.' 
+    const molliePayment = await createMollieCheckoutPayment({
+      mollieClient,
+      amount,
+      description: 'Donation to Abune Aregawi Church',
+      metadata: { type: 'donation', userId },
+    });
+
+    await syncMollieDonation(molliePayment, req.user ? req.user._id : null);
+
+    res.json({ checkoutUrl: molliePayment.getCheckoutUrl(), paymentId: molliePayment.id });
+  } catch (error) {
+    console.error('Mollie payment creation error:', error);
+    res.status(500).json({
+      message: error.message || 'Failed to create payment. Please check your Mollie configuration.',
+    });
+  }
+});
+
+router.post('/create-membership', auth, async (req, res) => {
+  try {
+    const mollieClient = getMollieClient();
+    if (!mollieClient) {
+      return res.status(500).json({
+        message: 'Mollie is not configured. Please add MOLLIE_API_KEY to your server environment variables.',
       });
     }
 
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: amountInCents,
-      currency: 'eur',
-      payment_method_types: ['ideal', 'card'],
+    if (req.user.isMember && req.user.subscriptionStatus === 'active') {
+      return res.status(400).json({ message: 'You are already an active member.' });
+    }
+
+    const customer = await getOrCreateMollieCustomer(mollieClient, req.user);
+
+    const molliePayment = await createMollieCheckoutPayment({
+      mollieClient,
+      amount: MEMBERSHIP_AMOUNT,
+      description: 'Church Membership - First payment',
+      customerId: customer.id,
+      sequenceType: SequenceType.first,
       metadata: {
-        type: 'donation',
+        type: 'membership_first',
+        userId: req.user._id.toString(),
       },
     });
 
-    res.json({ clientSecret: paymentIntent.client_secret });
+    await syncSubscriptionPayment(molliePayment, req.user);
+
+    res.json({ checkoutUrl: molliePayment.getCheckoutUrl(), paymentId: molliePayment.id });
   } catch (error) {
-    console.error('Payment intent creation error:', error);
-    res.status(500).json({ 
-      message: error.message || 'Failed to create payment intent. Please check your Stripe configuration.' 
+    console.error('Mollie membership creation error:', error);
+    res.status(500).json({
+      message: error.message || 'Failed to start membership. Please check your Mollie configuration.',
     });
   }
 });
 
-// Create payment intent for donation (allow anonymous)
-router.post('/donation', optionalAuth, [
-  body('amount').isFloat({ min: 1 }).withMessage('Amount must be at least 1 EUR'),
-], async (req, res) => {
+router.post('/mollie-webhook', express.urlencoded({ extended: true }), async (req, res) => {
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+    const mollieClient = getMollieClient();
+    if (!mollieClient) {
+      return res.status(500).send('Mollie not configured');
     }
 
-    const { amount, paymentMethodId } = req.body;
-    const amountInCents = Math.round(amount * 100);
-
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: amountInCents,
-      currency: 'eur',
-      payment_method_types: ['ideal', 'card'],
-      payment_method: paymentMethodId,
-      confirm: true,
-      return_url: `${process.env.FRONTEND_URL}/payment-success`,
-    });
-
-    if (paymentIntent.status === 'succeeded') {
-      const payment = new Payment({
-        user: req.user ? req.user._id : null,
-        type: 'donation',
-        amount: amount,
-        status: 'completed',
-        stripePaymentIntentId: paymentIntent.id,
-        paymentMethod: paymentMethodId ? 'card' : 'ideal',
-      });
-      await payment.save();
+    const paymentId = req.body.id;
+    if (!paymentId) {
+      return res.status(400).send('Missing payment id');
     }
 
-    res.json({ clientSecret: paymentIntent.client_secret, paymentIntent });
+    const molliePayment = await mollieClient.payments.get(paymentId);
+    await processMolliePayment(molliePayment);
+
+    res.status(200).send('OK');
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: error.message });
+    console.error('Mollie webhook error:', error);
+    res.status(500).send('Webhook handler failed');
   }
 });
 
-// Create setup intent for subscriptions (to collect payment method)
-router.post('/create-setup-intent', auth, async (req, res) => {
+router.get('/mollie-status/:paymentId', async (req, res) => {
   try {
-    // Check if Stripe is configured
-    if (!process.env.STRIPE_SECRET_KEY || process.env.STRIPE_SECRET_KEY.includes('your_stripe')) {
-      return res.status(500).json({ 
-        message: 'Stripe is not configured. Please add your Stripe secret key to the .env file.' 
-      });
+    const mollieClient = getMollieClient();
+    if (!mollieClient) {
+      return res.status(500).json({ message: 'Mollie is not configured' });
     }
 
-    const setupIntent = await stripe.setupIntents.create({
-      payment_method_types: ['card', 'ideal'],
-      customer: req.user.stripeCustomerId || undefined,
-    });
+    const molliePayment = await mollieClient.payments.get(req.params.paymentId);
+    const payment = await processMolliePayment(molliePayment);
 
-    res.json({ clientSecret: setupIntent.client_secret });
-  } catch (error) {
-    console.error('Setup intent creation error:', error);
-    res.status(500).json({ 
-      message: error.message || 'Failed to create setup intent.' 
-    });
-  }
-});
-
-// Create subscription (monthly membership)
-router.post('/subscribe', auth, async (req, res) => {
-  try {
-    const { paymentMethodId } = req.body;
-
-    let customer;
-    if (req.user.stripeCustomerId) {
-      customer = await stripe.customers.retrieve(req.user.stripeCustomerId);
-    } else {
-      customer = await stripe.customers.create({
-        email: req.user.email,
-        name: req.user.name,
-        payment_method: paymentMethodId,
-      });
-      req.user.stripeCustomerId = customer.id;
+    if (!payment && molliePayment.metadata?.type !== 'membership_first') {
+      return res.status(404).json({ message: 'Payment not found' });
     }
 
-    // Attach payment method to customer
-    await stripe.paymentMethods.attach(paymentMethodId, {
-      customer: customer.id,
-    });
-
-    // Set as default payment method
-    await stripe.customers.update(customer.id, {
-      invoice_settings: {
-        default_payment_method: paymentMethodId,
-      },
-    });
-
-    // Create subscription (10 EUR per month)
-    const subscription = await stripe.subscriptions.create({
-      customer: customer.id,
-      items: [{
-        price_data: {
-          currency: 'eur',
-          product_data: {
-            name: 'Church Membership',
-            description: 'Monthly membership fee',
-          },
-          unit_amount: 1000, // 10 EUR in cents
-          recurring: {
-            interval: 'month',
-          },
-        },
-      }],
-      payment_behavior: 'default_incomplete',
-      payment_settings: { save_default_payment_method: 'on_subscription' },
-      expand: ['latest_invoice.payment_intent'],
-    });
-
-    req.user.stripeSubscriptionId = subscription.id;
-    req.user.subscriptionStatus = subscription.status;
-    req.user.isMember = true;
-    req.user.memberSince = new Date();
-    await req.user.save();
-
-    // Create payment record
-    const payment = new Payment({
-      user: req.user._id,
-      type: 'subscription',
-      amount: 10,
-      status: subscription.status === 'active' ? 'completed' : 'pending',
-      stripeSubscriptionId: subscription.id,
-      month: new Date().getMonth() + 1,
-      year: new Date().getFullYear(),
-      paymentMethod: 'card',
-    });
-    await payment.save();
+    const paymentType = molliePayment.metadata?.type === 'membership_first'
+      ? 'membership'
+      : molliePayment.metadata?.type === 'donation'
+        ? 'donation'
+        : 'subscription';
 
     res.json({
-      subscriptionId: subscription.id,
-      clientSecret: subscription.latest_invoice.payment_intent.client_secret,
-      subscription,
+      status: payment?.status || paymentStatusFromMollie(molliePayment.status),
+      mollieStatus: molliePayment.status,
+      amount: payment?.amount || parseFloat(molliePayment.amount.value),
+      type: paymentType,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: error.message });
+    console.error('Mollie status check error:', error);
+    res.status(500).json({ message: 'Failed to check payment status' });
   }
 });
 
-// Get user payments
 router.get('/my-payments', auth, async (req, res) => {
   try {
     const payments = await Payment.find({ user: req.user._id })
@@ -221,89 +391,4 @@ router.get('/my-payments', auth, async (req, res) => {
   }
 });
 
-// Webhook handler for Stripe events
-router.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
-  const sig = req.headers['stripe-signature'];
-  let event;
-
-  try {
-    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
-  } catch (err) {
-    console.error('Webhook signature verification failed:', err.message);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
-  }
-
-  try {
-    switch (event.type) {
-      case 'payment_intent.succeeded':
-        const paymentIntent = event.data.object;
-        // Check if this is a donation
-        if (paymentIntent.metadata && paymentIntent.metadata.type === 'donation') {
-          const payment = await Payment.findOne({ stripePaymentIntentId: paymentIntent.id });
-          if (!payment) {
-            // Find user by customer ID or create anonymous payment
-            const donationUser = paymentIntent.customer ? await User.findOne({ stripeCustomerId: paymentIntent.customer }) : null;
-            const newPayment = new Payment({
-              user: donationUser ? donationUser._id : null,
-              type: 'donation',
-              amount: paymentIntent.amount / 100,
-              status: 'completed',
-              stripePaymentIntentId: paymentIntent.id,
-              paymentMethod: paymentIntent.payment_method_types[0] || 'card',
-            });
-            await newPayment.save();
-          }
-        }
-        break;
-
-      case 'invoice.payment_succeeded':
-        const invoice = event.data.object;
-        const user = await User.findOne({ stripeCustomerId: invoice.customer });
-        if (user && user.stripeSubscriptionId) {
-          const payment = new Payment({
-            user: user._id,
-            type: 'subscription',
-            amount: invoice.amount_paid / 100,
-            status: 'completed',
-            stripeSubscriptionId: invoice.subscription,
-            month: new Date(invoice.period_start * 1000).getMonth() + 1,
-            year: new Date(invoice.period_start * 1000).getFullYear(),
-            paymentMethod: 'card',
-          });
-          await payment.save();
-          
-          user.subscriptionStatus = 'active';
-          user.isMember = true;
-          await user.save();
-        }
-        break;
-
-      case 'invoice.payment_failed':
-        const failedInvoice = event.data.object;
-        const failedUser = await User.findOne({ stripeCustomerId: failedInvoice.customer });
-        if (failedUser) {
-          failedUser.subscriptionStatus = 'past_due';
-          await failedUser.save();
-        }
-        break;
-
-      case 'customer.subscription.deleted':
-        const deletedSubscription = event.data.object;
-        const deletedUser = await User.findOne({ stripeCustomerId: deletedSubscription.customer });
-        if (deletedUser) {
-          deletedUser.subscriptionStatus = 'canceled';
-          deletedUser.isMember = false;
-          await deletedUser.save();
-        }
-        break;
-    }
-
-    res.json({ received: true });
-  } catch (error) {
-    console.error('Webhook handler error:', error);
-    res.status(500).json({ error: 'Webhook handler failed' });
-  }
-});
-
 module.exports = router;
-
