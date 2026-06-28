@@ -8,10 +8,27 @@ const { auth } = require('../middleware/auth');
 
 const MEMBERSHIP_AMOUNT = '10.00';
 
-const getMollieClient = () => {
-  const apiKey = process.env.MOLLIE_API_KEY;
+const getMollieApiKey = () => {
+  const apiKey = process.env.MOLLIE_API_KEY?.trim().replace(/^Bearer\s+/i, '');
   if (!apiKey || apiKey.includes('your_mollie')) return null;
+  return apiKey;
+};
+
+const getMollieClient = () => {
+  const apiKey = getMollieApiKey();
+  if (!apiKey) return null;
   return createMollieClient({ apiKey });
+};
+
+const getMollieConfigError = () => {
+  const apiKey = getMollieApiKey();
+  if (!apiKey) {
+    return 'Mollie is not configured. Please add MOLLIE_API_KEY to your server environment variables.';
+  }
+  if (!/^test_|live_/.test(apiKey)) {
+    return 'Mollie API key is invalid. It must start with test_ or live_. Copy it from Mollie Dashboard → Developers → API keys.';
+  }
+  return null;
 };
 
 const getBackendUrl = () =>
@@ -260,13 +277,12 @@ router.post('/create-mollie-payment', optionalAuth, [
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const mollieClient = getMollieClient();
-    if (!mollieClient) {
-      return res.status(500).json({
-        message: 'Mollie is not configured. Please add MOLLIE_API_KEY to your server environment variables.',
-      });
+    const mollieConfigError = getMollieConfigError();
+    if (mollieConfigError) {
+      return res.status(500).json({ message: mollieConfigError });
     }
 
+    const mollieClient = getMollieClient();
     const { amount } = req.body;
     const userId = req.user ? req.user._id.toString() : '';
 
@@ -282,20 +298,21 @@ router.post('/create-mollie-payment', optionalAuth, [
     res.json({ checkoutUrl: molliePayment.getCheckoutUrl(), paymentId: molliePayment.id });
   } catch (error) {
     console.error('Mollie payment creation error:', error);
-    res.status(500).json({
-      message: error.message || 'Failed to create payment. Please check your Mollie configuration.',
-    });
+    const message = error.message?.includes('Authorization')
+      ? 'Mollie API key is invalid. On Render, set MOLLIE_API_KEY to your key from Mollie Dashboard → Developers → API keys (starts with test_ or live_).'
+      : error.message || 'Failed to create payment. Please check your Mollie configuration.';
+    res.status(500).json({ message });
   }
 });
 
 router.post('/create-membership', auth, async (req, res) => {
   try {
-    const mollieClient = getMollieClient();
-    if (!mollieClient) {
-      return res.status(500).json({
-        message: 'Mollie is not configured. Please add MOLLIE_API_KEY to your server environment variables.',
-      });
+    const mollieConfigError = getMollieConfigError();
+    if (mollieConfigError) {
+      return res.status(500).json({ message: mollieConfigError });
     }
+
+    const mollieClient = getMollieClient();
 
     if (req.user.isMember && req.user.subscriptionStatus === 'active') {
       return res.status(400).json({ message: 'You are already an active member.' });
