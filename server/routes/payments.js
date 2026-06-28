@@ -9,9 +9,22 @@ const { auth } = require('../middleware/auth');
 const MEMBERSHIP_AMOUNT = '10.00';
 
 const getMollieApiKey = () => {
-  const apiKey = process.env.MOLLIE_API_KEY?.trim().replace(/^Bearer\s+/i, '');
+  const raw = process.env.MOLLIE_API_KEY;
+  if (!raw) return null;
+
+  const apiKey = raw
+    .trim()
+    .replace(/^Bearer\s+/i, '')
+    .replace(/^['"]|['"]$/g, '');
+
   if (!apiKey || apiKey.includes('your_mollie')) return null;
   return apiKey;
+};
+
+const getMollieKeyHint = (apiKey) => {
+  if (!apiKey) return 'not set';
+  if (apiKey.length < 20) return `too short (${apiKey.length} chars)`;
+  return `starts with "${apiKey.slice(0, 5)}..."`;
 };
 
 const getMollieClient = () => {
@@ -26,7 +39,7 @@ const getMollieConfigError = () => {
     return 'Mollie is not configured. Please add MOLLIE_API_KEY to your server environment variables.';
   }
   if (!/^test_|live_/.test(apiKey)) {
-    return 'Mollie API key is invalid. It must start with test_ or live_. Copy it from Mollie Dashboard → Developers → API keys.';
+    return `Mollie API key is invalid (${getMollieKeyHint(apiKey)}). Use the API key from Mollie Dashboard → Developers → API keys. It must start with test_ or live_, with no quotes or spaces.`;
   }
   return null;
 };

@@ -121,6 +121,16 @@ if (!cloudinaryConfigured) {
   console.log('✅ Cloudinary configured successfully');
 }
 
+const mollieKey = process.env.MOLLIE_API_KEY?.trim().replace(/^Bearer\s+/i, '').replace(/^['"]|['"]$/g, '');
+if (!mollieKey) {
+  console.warn('⚠️  WARNING: MOLLIE_API_KEY is not set. Donations and membership payments will fail.');
+} else if (!/^test_|live_/.test(mollieKey)) {
+  console.warn(`⚠️  WARNING: MOLLIE_API_KEY looks invalid (starts with "${mollieKey.slice(0, 4)}", length ${mollieKey.length}).`);
+  console.warn('   Use API key from Mollie Dashboard → Developers → API keys (test_... or live_...).');
+} else {
+  console.log(`✅ Mollie configured (${mollieKey.startsWith('test_') ? 'test' : 'live'} mode)`);
+}
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
